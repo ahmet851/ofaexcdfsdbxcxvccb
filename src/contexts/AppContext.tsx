@@ -14,6 +14,8 @@ export interface Device {
     ram?: string;
     processor?: string;
     generation?: string;
+    storageType?: string;
+    storageCapacity?: string;
   };
   maintenanceDate?: Date;
   createdAt: Date;

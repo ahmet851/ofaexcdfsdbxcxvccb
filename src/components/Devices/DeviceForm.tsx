@@ -17,7 +17,9 @@ export const DeviceForm: React.FC<DeviceFormProps> = ({ deviceId, onClose }) => 
     specifications: {
       ram: '',
       processor: '',
-      generation: ''
+      generation: '',
+      storageType: '',
+      storageCapacity: ''
     }
   });
 
@@ -31,7 +33,13 @@ export const DeviceForm: React.FC<DeviceFormProps> = ({ deviceId, onClose }) => 
         category: device.category,
         serialNumber: device.serialNumber,
         status: device.status,
-        specifications: device.specifications
+        specifications: {
+          ram: device.specifications.ram || '',
+          processor: device.specifications.processor || '',
+          generation: device.specifications.generation || '',
+          storageType: device.specifications.storageType || '',
+          storageCapacity: device.specifications.storageCapacity || ''
+        }
       });
     }
   }, [device]);
@@ -209,25 +217,59 @@ export const DeviceForm: React.FC<DeviceFormProps> = ({ deviceId, onClose }) => 
               </div>
             </div>
 
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  İşlemci Nesli
+                </label>
+                <select
+                  value={formData.specifications.generation}
+                  onChange={(e) => handleChange('specifications.generation', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Nesil Seçin</option>
+                  <option value="5. Nesil">5. Nesil</option>
+                  <option value="7. Nesil">7. Nesil</option>
+                  <option value="8. Nesil">8. Nesil</option>
+                  <option value="9. Nesil">9. Nesil</option>
+                  <option value="10. Nesil">10. Nesil</option>
+                  <option value="11. Nesil">11. Nesil</option>
+                  <option value="12. Nesil">12. Nesil</option>
+                  <option value="13. Nesil">13. Nesil</option>
+                  <option value="14. Nesil">14. Nesil</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  Depolama Tipi
+                </label>
+                <select
+                  value={formData.specifications.storageType}
+                  onChange={(e) => handleChange('specifications.storageType', e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                >
+                  <option value="">Depolama Tipi Seçin</option>
+                  <option value="SSD">SSD</option>
+                  <option value="HDD">HDD</option>
+                </select>
+              </div>
+            </div>
+
             <div className="mt-4">
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                İşlemci Nesli
+                Depolama Kapasitesi
               </label>
               <select
-                value={formData.specifications.generation}
-                onChange={(e) => handleChange('specifications.generation', e.target.value)}
+                value={formData.specifications.storageCapacity}
+                onChange={(e) => handleChange('specifications.storageCapacity', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
               >
-                <option value="">Nesil Seçin</option>
-                <option value="5. Nesil">5. Nesil</option>
-                <option value="7. Nesil">7. Nesil</option>
-                <option value="8. Nesil">8. Nesil</option>
-                <option value="9. Nesil">9. Nesil</option>
-                <option value="10. Nesil">10. Nesil</option>
-                <option value="11. Nesil">11. Nesil</option>
-                <option value="12. Nesil">12. Nesil</option>
-                <option value="13. Nesil">13. Nesil</option>
-                <option value="14. Nesil">14. Nesil</option>
+                <option value="">Kapasite Seçin</option>
+                <option value="256GB">256 GB</option>
+                <option value="500GB">500 GB</option>
+                <option value="1TB">1 TB</option>
+                <option value="2TB">2 TB</option>
               </select>
             </div>
           </div>

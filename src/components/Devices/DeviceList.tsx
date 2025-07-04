@@ -1,5 +1,5 @@
 import React from 'react';
-import { Edit, Trash2, Monitor, CheckCircle, AlertTriangle, Clock, XCircle } from 'lucide-react';
+import { Edit, Trash2, Monitor, CheckCircle, AlertTriangle, Clock, XCircle, HardDrive } from 'lucide-react';
 import { Device, useApp } from '../../contexts/AppContext';
 import { format } from 'date-fns';
 import { tr } from 'date-fns/locale';
@@ -18,7 +18,6 @@ const formatTurkishDate = (date: any) => {
   if (isNaN(parsedDate.getTime())) return '-';
   return format(parsedDate, 'dd.MM.yyyy', { locale: tr });
 };
-
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -60,6 +59,16 @@ const formatTurkishDate = (date: any) => {
     }
   };
 
+  const getStorageInfo = (device: Device) => {
+    const { storageType, storageCapacity } = device.specifications;
+    if (storageType && storageCapacity) {
+      return `${storageType} ${storageCapacity}`;
+    }
+    if (storageType) return storageType;
+    if (storageCapacity) return storageCapacity;
+    return '-';
+  };
+
   if (devices.length === 0) {
     return (
       <div className="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-8 text-center">
@@ -90,6 +99,9 @@ const formatTurkishDate = (date: any) => {
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Özellikler
+              </th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Depolama
               </th>
               <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                 Ekleme Tarihi
@@ -150,6 +162,12 @@ const formatTurkishDate = (date: any) => {
                         {device.specifications.ram} RAM
                       </div>
                     )}
+                  </div>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap">
+                  <div className="flex items-center gap-2 text-sm text-gray-900 dark:text-white">
+                    <HardDrive className="h-4 w-4 text-gray-400" />
+                    <span>{getStorageInfo(device)}</span>
                   </div>
                 </td>
                 <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">

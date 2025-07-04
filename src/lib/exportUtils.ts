@@ -19,6 +19,17 @@ const getStatusText = (status: string) => {
   }
 };
 
+// Helper function for storage info
+const getStorageInfo = (device: Device) => {
+  const { storageType, storageCapacity } = device.specifications;
+  if (storageType && storageCapacity) {
+    return `${storageType} ${storageCapacity}`;
+  }
+  if (storageType) return storageType;
+  if (storageCapacity) return storageCapacity;
+  return 'Belirtilmemiş';
+};
+
 // Excel export functions
 export const exportToExcel = {
   devices: (devices: Device[], personnel: Personnel[]) => {
@@ -37,6 +48,7 @@ export const exportToExcel = {
         'RAM': device.specifications.ram || 'Belirtilmemiş',
         'İşlemci': device.specifications.processor || 'Belirtilmemiş',
         'Nesil': device.specifications.generation || 'Belirtilmemiş',
+        'Depolama': getStorageInfo(device),
         'Oluşturma Tarihi': formatTurkishDate(device.createdAt),
         'Zimmet Tarihi': device.assignedDate ? formatTurkishDate(device.assignedDate) : 'Yok'
       };
@@ -77,6 +89,7 @@ export const exportToExcel = {
         'Zimmet ID': assignment.id,
         'Cihaz': device ? `${device.brand} ${device.category}` : 'Bilinmiyor',
         'Seri Numarası': device?.serialNumber || 'Bilinmiyor',
+        'Depolama': device ? getStorageInfo(device) : 'Bilinmiyor',
         'Personel': person?.name || 'Bilinmiyor',
         'Departman': person?.department || 'Bilinmiyor',
         'Zimmet Tarihi': formatTurkishDate(assignment.assignedDate),
@@ -113,6 +126,7 @@ export const exportToExcel = {
         'RAM': device.specifications.ram || 'Belirtilmemiş',
         'İşlemci': device.specifications.processor || 'Belirtilmemiş',
         'Nesil': device.specifications.generation || 'Belirtilmemiş',
+        'Depolama': getStorageInfo(device),
         'Oluşturma Tarihi': formatTurkishDate(device.createdAt)
       };
     });
@@ -140,6 +154,7 @@ export const exportToExcel = {
         'Zimmet ID': assignment.id,
         'Cihaz': device ? `${device.brand} ${device.category}` : 'Bilinmiyor',
         'Seri Numarası': device?.serialNumber || 'Bilinmiyor',
+        'Depolama': device ? getStorageInfo(device) : 'Bilinmiyor',
         'Personel': person?.name || 'Bilinmiyor',
         'Departman': person?.department || 'Bilinmiyor',
         'Zimmet Tarihi': formatTurkishDate(assignment.assignedDate),

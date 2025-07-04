@@ -15,6 +15,8 @@ interface ImportRow {
   ram?: string;
   processor?: string;
   generation?: string;
+  storageType?: string;
+  storageCapacity?: string;
   assignedTo?: string;
   department?: string;
   notes?: string;
@@ -41,6 +43,8 @@ export const ImportModal: React.FC<ImportModalProps> = ({ onClose }) => {
         'RAM': '16GB',
         'İşlemci': 'Intel Core i7',
         'Nesil': '12. Nesil',
+        'Depolama Tipi': 'SSD',
+        'Depolama Kapasitesi': '500GB',
         'Zimmetli Kişi': '',
         'Departman': '',
         'Notlar': ''
@@ -53,6 +57,8 @@ export const ImportModal: React.FC<ImportModalProps> = ({ onClose }) => {
         'RAM': '8GB',
         'İşlemci': 'Intel Core i5',
         'Nesil': '11. Nesil',
+        'Depolama Tipi': 'HDD',
+        'Depolama Kapasitesi': '1TB',
         'Zimmetli Kişi': 'Ahmet Yılmaz',
         'Departman': 'CRM',
         'Notlar': 'Yeni zimmet'
@@ -91,6 +97,8 @@ export const ImportModal: React.FC<ImportModalProps> = ({ onClose }) => {
           ram: row['RAM'] || '',
           processor: row['İşlemci'] || '',
           generation: row['Nesil'] || '',
+          storageType: row['Depolama Tipi'] || '',
+          storageCapacity: row['Depolama Kapasitesi'] || '',
           assignedTo: row['Zimmetli Kişi'] || '',
           department: row['Departman'] || '',
           notes: row['Notlar'] || ''
@@ -160,7 +168,9 @@ export const ImportModal: React.FC<ImportModalProps> = ({ onClose }) => {
             specifications: {
               ram: row.ram,
               processor: row.processor,
-              generation: row.generation
+              generation: row.generation,
+              storageType: row.storageType,
+              storageCapacity: row.storageCapacity
             }
           };
 
@@ -246,7 +256,7 @@ export const ImportModal: React.FC<ImportModalProps> = ({ onClose }) => {
               <div className="flex-1">
                 <h3 className="text-sm font-medium text-blue-900 dark:text-blue-100">Excel Şablonu</h3>
                 <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
-                  Doğru format için önce şablonu indirin ve doldurun.
+                  Doğru format için önce şablonu indirin ve doldurun. Şablon artık depolama alanlarını da içeriyor.
                 </p>
                 <button
                   onClick={downloadTemplate}
@@ -304,6 +314,11 @@ export const ImportModal: React.FC<ImportModalProps> = ({ onClose }) => {
                       <span className="text-gray-500 dark:text-gray-400 ml-2">
                         {row.serialNumber}
                       </span>
+                      {(row.storageType || row.storageCapacity) && (
+                        <span className="text-purple-600 dark:text-purple-400 ml-2">
+                          {row.storageType} {row.storageCapacity}
+                        </span>
+                      )}
                       {row.assignedTo && (
                         <span className="text-blue-600 dark:text-blue-400 ml-2">
                           → {row.assignedTo}
