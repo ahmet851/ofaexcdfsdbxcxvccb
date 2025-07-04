@@ -7,7 +7,7 @@ import { Header } from './components/Layout/Header';
 import { Dashboard } from './components/Dashboard/Dashboard';
 import { DeviceManagement } from './components/Devices/DeviceManagement';
 import { PersonnelManagement } from './components/Personnel/PersonnelManagement';
-import { InventoryManagement } from './components/Inventory/InventoryManagement';
+import { EnhancedInventoryManagement } from './components/Inventory/EnhancedInventoryManagement';
 import { Reports } from './components/Reports/Reports';
 import { Settings } from './components/Settings/Settings';
 
@@ -24,7 +24,7 @@ function App() {
       case 'personnel':
         return <PersonnelManagement />;
       case 'inventory':
-        return <InventoryManagement />;
+        return <EnhancedInventoryManagement />;
       case 'reports':
         return <Reports />;
       case 'settings':

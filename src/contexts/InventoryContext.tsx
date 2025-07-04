@@ -84,6 +84,8 @@ export const InventoryProvider: React.FC<{ children: ReactNode }> = ({ children 
       setLoading(true);
       setError(null);
       
+      console.log('Envanter verileri yükleniyor...');
+      
       const [itemsData, maintenanceData, auditData] = await Promise.all([
         inventoryService.getAll(),
         maintenanceService.getAll(),
@@ -147,17 +149,24 @@ export const InventoryProvider: React.FC<{ children: ReactNode }> = ({ children 
 
   const addInventoryItem = async (itemData: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>) => {
     try {
+      console.log('Yeni envanter öğesi ekleniyor:', itemData);
+      
       const newItem = await inventoryService.create(itemData);
       setInventoryItems(prev => [newItem, ...prev]);
       
       // Add audit record
-      await auditService.create({
-        inventoryItemId: newItem.id,
-        action: 'CREATE',
-        newValues: itemData,
-        changedBy: 'Sistem Yöneticisi',
-        changeReason: 'Yeni envanter öğesi eklendi'
-      });
+      try {
+        await auditService.create({
+          inventoryItemId: newItem.id,
+          action: 'CREATE',
+          newValues: itemData,
+          changedBy: 'Sistem Yöneticisi',
+          changeReason: 'Yeni envanter öğesi eklendi'
+        });
+      } catch (auditError) {
+        console.warn('Denetim kaydı eklenirken hata oluştu:', auditError);
+        // Audit hatası ana işlemi etkilemez
+      }
       
       console.log('Envanter öğesi başarıyla eklendi:', newItem);
     } catch (err) {
@@ -177,14 +186,18 @@ export const InventoryProvider: React.FC<{ children: ReactNode }> = ({ children 
       
       // Add audit record
       if (oldItem) {
-        await auditService.create({
-          inventoryItemId: id,
-          action: 'UPDATE',
-          oldValues: oldItem,
-          newValues: updates,
-          changedBy: 'Sistem Yöneticisi',
-          changeReason: 'Envanter öğesi güncellendi'
-        });
+        try {
+          await auditService.create({
+            inventoryItemId: id,
+            action: 'UPDATE',
+            oldValues: oldItem,
+            newValues: updates,
+            changedBy: 'Sistem Yöneticisi',
+            changeReason: 'Envanter öğesi güncellendi'
+          });
+        } catch (auditError) {
+          console.warn('Denetim kaydı eklenirken hata oluştu:', auditError);
+        }
       }
       
       console.log('Envanter öğesi başarıyla güncellendi:', updatedItem);

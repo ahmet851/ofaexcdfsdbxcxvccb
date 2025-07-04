@@ -1,25 +1,29 @@
-import { supabase } from './supabase';
+import { supabase, TABLES } from './supabase';
 import { InventoryItem, MaintenanceRecord, AuditRecord } from '../contexts/InventoryContext';
 
 // Inventory items operations
 export const inventoryService = {
   async getAll(): Promise<InventoryItem[]> {
-    const { data, error } = await supabase
-      .from('inventory_items')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      console.error('Envanter verilerini getirme hatası:', error);
-      throw error;
+    try {
+      const { data, error } = await supabase
+        .from(TABLES.INVENTORY_ITEMS)
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Envanter verilerini getirme hatası:', error);
+        throw error;
+      }
+      return data?.map(this.mapFromDB) || [];
+    } catch (err) {
+      console.error('Envanter servisi getAll hatası:', err);
+      throw err;
     }
-    return data?.map(this.mapFromDB) || [];
   },
 
   async create(item: Omit<InventoryItem, 'id' | 'createdAt' | 'updatedAt'>): Promise<InventoryItem> {
-    const { data, error } = await supabase
-      .from('inventory_items')
-      .insert([{
+    try {
+      const insertData = {
         item_name: item.itemName,
         serial_number: item.serialNumber,
         purchase_date: item.purchaseDate,
@@ -35,59 +39,81 @@ export const inventoryService = {
         model: item.model,
         specifications: item.specifications || {},
         notes: item.notes
-      }])
-      .select()
-      .single();
+      };
 
-    if (error) {
-      console.error('Envanter öğesi oluşturma hatası:', error);
-      throw error;
+      console.log('Envanter öğesi oluşturuluyor:', insertData);
+
+      const { data, error } = await supabase
+        .from(TABLES.INVENTORY_ITEMS)
+        .insert([insertData])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Envanter öğesi oluşturma hatası:', error);
+        throw error;
+      }
+      
+      console.log('Envanter öğesi başarıyla oluşturuldu:', data);
+      return this.mapFromDB(data);
+    } catch (err) {
+      console.error('Envanter servisi create hatası:', err);
+      throw err;
     }
-    return this.mapFromDB(data);
   },
 
   async update(id: string, updates: Partial<InventoryItem>): Promise<InventoryItem> {
-    const updateData: any = {};
-    
-    if (updates.itemName !== undefined) updateData.item_name = updates.itemName;
-    if (updates.serialNumber !== undefined) updateData.serial_number = updates.serialNumber;
-    if (updates.purchaseDate !== undefined) updateData.purchase_date = updates.purchaseDate;
-    if (updates.currentStatus !== undefined) updateData.current_status = updates.currentStatus;
-    if (updates.locationDepartment !== undefined) updateData.location_department = updates.locationDepartment;
-    if (updates.warrantyStartDate !== undefined) updateData.warranty_start_date = updates.warrantyStartDate;
-    if (updates.warrantyEndDate !== undefined) updateData.warranty_end_date = updates.warrantyEndDate;
-    if (updates.warrantyProvider !== undefined) updateData.warranty_provider = updates.warrantyProvider;
-    if (updates.purchasePrice !== undefined) updateData.purchase_price = updates.purchasePrice;
-    if (updates.supplier !== undefined) updateData.supplier = updates.supplier;
-    if (updates.category !== undefined) updateData.category = updates.category;
-    if (updates.brand !== undefined) updateData.brand = updates.brand;
-    if (updates.model !== undefined) updateData.model = updates.model;
-    if (updates.specifications !== undefined) updateData.specifications = updates.specifications;
-    if (updates.notes !== undefined) updateData.notes = updates.notes;
+    try {
+      const updateData: any = {};
+      
+      if (updates.itemName !== undefined) updateData.item_name = updates.itemName;
+      if (updates.serialNumber !== undefined) updateData.serial_number = updates.serialNumber;
+      if (updates.purchaseDate !== undefined) updateData.purchase_date = updates.purchaseDate;
+      if (updates.currentStatus !== undefined) updateData.current_status = updates.currentStatus;
+      if (updates.locationDepartment !== undefined) updateData.location_department = updates.locationDepartment;
+      if (updates.warrantyStartDate !== undefined) updateData.warranty_start_date = updates.warrantyStartDate;
+      if (updates.warrantyEndDate !== undefined) updateData.warranty_end_date = updates.warrantyEndDate;
+      if (updates.warrantyProvider !== undefined) updateData.warranty_provider = updates.warrantyProvider;
+      if (updates.purchasePrice !== undefined) updateData.purchase_price = updates.purchasePrice;
+      if (updates.supplier !== undefined) updateData.supplier = updates.supplier;
+      if (updates.category !== undefined) updateData.category = updates.category;
+      if (updates.brand !== undefined) updateData.brand = updates.brand;
+      if (updates.model !== undefined) updateData.model = updates.model;
+      if (updates.specifications !== undefined) updateData.specifications = updates.specifications;
+      if (updates.notes !== undefined) updateData.notes = updates.notes;
 
-    const { data, error } = await supabase
-      .from('inventory_items')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
+      const { data, error } = await supabase
+        .from(TABLES.INVENTORY_ITEMS)
+        .update(updateData)
+        .eq('id', id)
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Envanter öğesi güncelleme hatası:', error);
-      throw error;
+      if (error) {
+        console.error('Envanter öğesi güncelleme hatası:', error);
+        throw error;
+      }
+      return this.mapFromDB(data);
+    } catch (err) {
+      console.error('Envanter servisi update hatası:', err);
+      throw err;
     }
-    return this.mapFromDB(data);
   },
 
   async delete(id: string): Promise<void> {
-    const { error } = await supabase
-      .from('inventory_items')
-      .delete()
-      .eq('id', id);
+    try {
+      const { error } = await supabase
+        .from(TABLES.INVENTORY_ITEMS)
+        .delete()
+        .eq('id', id);
 
-    if (error) {
-      console.error('Envanter öğesi silme hatası:', error);
-      throw error;
+      if (error) {
+        console.error('Envanter öğesi silme hatası:', error);
+        throw error;
+      }
+    } catch (err) {
+      console.error('Envanter servisi delete hatası:', err);
+      throw err;
     }
   },
 
@@ -118,68 +144,83 @@ export const inventoryService = {
 // Maintenance records operations
 export const maintenanceService = {
   async getAll(): Promise<MaintenanceRecord[]> {
-    const { data, error } = await supabase
-      .from('inventory_maintenance')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      console.error('Bakım verilerini getirme hatası:', error);
-      throw error;
+    try {
+      const { data, error } = await supabase
+        .from(TABLES.INVENTORY_MAINTENANCE)
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Bakım verilerini getirme hatası:', error);
+        throw error;
+      }
+      return data?.map(this.mapFromDB) || [];
+    } catch (err) {
+      console.error('Bakım servisi getAll hatası:', err);
+      throw err;
     }
-    return data?.map(this.mapFromDB) || [];
   },
 
   async create(record: Omit<MaintenanceRecord, 'id' | 'createdAt'>): Promise<MaintenanceRecord> {
-    const { data, error } = await supabase
-      .from('inventory_maintenance')
-      .insert([{
-        inventory_item_id: record.inventoryItemId,
-        maintenance_type: record.maintenanceType,
-        description: record.description,
-        start_date: record.startDate,
-        completion_date: record.completionDate,
-        status: record.status,
-        cost: record.cost,
-        technician: record.technician,
-        supplier_service: record.supplierService,
-        notes: record.notes
-      }])
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from(TABLES.INVENTORY_MAINTENANCE)
+        .insert([{
+          inventory_item_id: record.inventoryItemId,
+          maintenance_type: record.maintenanceType,
+          description: record.description,
+          start_date: record.startDate,
+          completion_date: record.completionDate,
+          status: record.status,
+          cost: record.cost,
+          technician: record.technician,
+          supplier_service: record.supplierService,
+          notes: record.notes
+        }])
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Bakım kaydı oluşturma hatası:', error);
-      throw error;
+      if (error) {
+        console.error('Bakım kaydı oluşturma hatası:', error);
+        throw error;
+      }
+      return this.mapFromDB(data);
+    } catch (err) {
+      console.error('Bakım servisi create hatası:', err);
+      throw err;
     }
-    return this.mapFromDB(data);
   },
 
   async update(id: string, updates: Partial<MaintenanceRecord>): Promise<MaintenanceRecord> {
-    const updateData: any = {};
-    
-    if (updates.maintenanceType !== undefined) updateData.maintenance_type = updates.maintenanceType;
-    if (updates.description !== undefined) updateData.description = updates.description;
-    if (updates.startDate !== undefined) updateData.start_date = updates.startDate;
-    if (updates.completionDate !== undefined) updateData.completion_date = updates.completionDate;
-    if (updates.status !== undefined) updateData.status = updates.status;
-    if (updates.cost !== undefined) updateData.cost = updates.cost;
-    if (updates.technician !== undefined) updateData.technician = updates.technician;
-    if (updates.supplierService !== undefined) updateData.supplier_service = updates.supplierService;
-    if (updates.notes !== undefined) updateData.notes = updates.notes;
+    try {
+      const updateData: any = {};
+      
+      if (updates.maintenanceType !== undefined) updateData.maintenance_type = updates.maintenanceType;
+      if (updates.description !== undefined) updateData.description = updates.description;
+      if (updates.startDate !== undefined) updateData.start_date = updates.startDate;
+      if (updates.completionDate !== undefined) updateData.completion_date = updates.completionDate;
+      if (updates.status !== undefined) updateData.status = updates.status;
+      if (updates.cost !== undefined) updateData.cost = updates.cost;
+      if (updates.technician !== undefined) updateData.technician = updates.technician;
+      if (updates.supplierService !== undefined) updateData.supplier_service = updates.supplierService;
+      if (updates.notes !== undefined) updateData.notes = updates.notes;
 
-    const { data, error } = await supabase
-      .from('inventory_maintenance')
-      .update(updateData)
-      .eq('id', id)
-      .select()
-      .single();
+      const { data, error } = await supabase
+        .from(TABLES.INVENTORY_MAINTENANCE)
+        .update(updateData)
+        .eq('id', id)
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Bakım kaydı güncelleme hatası:', error);
-      throw error;
+      if (error) {
+        console.error('Bakım kaydı güncelleme hatası:', error);
+        throw error;
+      }
+      return this.mapFromDB(data);
+    } catch (err) {
+      console.error('Bakım servisi update hatası:', err);
+      throw err;
     }
-    return this.mapFromDB(data);
   },
 
   mapFromDB(data: any): MaintenanceRecord {
@@ -203,37 +244,47 @@ export const maintenanceService = {
 // Audit records operations
 export const auditService = {
   async getAll(): Promise<AuditRecord[]> {
-    const { data, error } = await supabase
-      .from('inventory_audit')
-      .select('*')
-      .order('created_at', { ascending: false });
-    
-    if (error) {
-      console.error('Denetim verilerini getirme hatası:', error);
-      throw error;
+    try {
+      const { data, error } = await supabase
+        .from(TABLES.INVENTORY_AUDIT)
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) {
+        console.error('Denetim verilerini getirme hatası:', error);
+        throw error;
+      }
+      return data?.map(this.mapFromDB) || [];
+    } catch (err) {
+      console.error('Denetim servisi getAll hatası:', err);
+      throw err;
     }
-    return data?.map(this.mapFromDB) || [];
   },
 
   async create(record: Omit<AuditRecord, 'id' | 'createdAt'>): Promise<AuditRecord> {
-    const { data, error } = await supabase
-      .from('inventory_audit')
-      .insert([{
-        inventory_item_id: record.inventoryItemId,
-        action: record.action,
-        old_values: record.oldValues,
-        new_values: record.newValues,
-        changed_by: record.changedBy,
-        change_reason: record.changeReason
-      }])
-      .select()
-      .single();
+    try {
+      const { data, error } = await supabase
+        .from(TABLES.INVENTORY_AUDIT)
+        .insert([{
+          inventory_item_id: record.inventoryItemId,
+          action: record.action,
+          old_values: record.oldValues,
+          new_values: record.newValues,
+          changed_by: record.changedBy,
+          change_reason: record.changeReason
+        }])
+        .select()
+        .single();
 
-    if (error) {
-      console.error('Denetim kaydı oluşturma hatası:', error);
-      throw error;
+      if (error) {
+        console.error('Denetim kaydı oluşturma hatası:', error);
+        throw error;
+      }
+      return this.mapFromDB(data);
+    } catch (err) {
+      console.error('Denetim servisi create hatası:', err);
+      throw err;
     }
-    return this.mapFromDB(data);
   },
 
   mapFromDB(data: any): AuditRecord {
