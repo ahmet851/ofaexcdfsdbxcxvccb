@@ -3,6 +3,7 @@ import {
   LayoutDashboard, 
   Monitor, 
   Users, 
+  Package,
   FileText, 
   Settings, 
   ChevronLeft,
@@ -22,6 +23,7 @@ const menuItems = [
   { id: 'dashboard', label: 'Ana Panel', icon: LayoutDashboard },
   { id: 'devices', label: 'Cihaz Yönetimi', icon: Monitor },
   { id: 'personnel', label: 'Personel', icon: Users },
+  { id: 'inventory', label: 'Envanter Yönetimi', icon: Package },
   { id: 'reports', label: 'Raporlar', icon: FileText },
   { id: 'settings', label: 'Ayarlar', icon: Settings }
 ];
